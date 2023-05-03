@@ -1,2 +1,6 @@
+# Model Files, both input and output
 **.pth
 **.ort
+
+#Dotfiles 
+.dotfiles/
