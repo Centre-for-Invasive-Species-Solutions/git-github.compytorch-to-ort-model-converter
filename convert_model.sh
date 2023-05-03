@@ -6,11 +6,9 @@
 # 	convert PyTorch .pth models to ONNXRuntime's .ort
 #	format.
 #
-#	USAGE: . convert_model [pytorch_model_file] [N]
+#	USAGE: . convert_model [pytorch_model_file]
 #
-#	...where N = number of species identified by the model
-#
-#	Eg: . convert_model model257species.pyt 257
+#	Eg: . convert_model model257species.pyt
 #
 #	2pi Software
 #	Lachlan Walker
@@ -22,7 +20,7 @@ readarray -d . -t strarr <<< "$1"
 BASENAME=${strarr}
 
 # Check that exactly 2 cmd line args have been passed
-if [[ $# != 2 ]]; then
+if [[ $# != 1 ]]; then
     echo "Incorrect number of arguments supplied. Please check usage instructions."
     exit 1
 fi
@@ -53,10 +51,17 @@ docker cp $1 model_converter:/opt/$1
 docker cp convert_to_onnx.py model_converter:/opt/convert_to_onnx.py
 
 echo "Copying completed."
+
+# Get the number of outputs from the model (N)
+FULL_LINE=$(grep -oa "num_classes=[0-9]*" "$FILE")
+echo Class spec full line: $FULL_LINE
+NUM=$(echo "$FULL_LINE" | grep -Po "[0-9][0-9][0-9]")
+echo "Detected N classes = " $NUM
+
 echo "Converting model to .onnx..."
 
 # Run .pyt -> .onnx conversion
-docker exec model_converter python3 ./opt/convert_to_onnx.py "/opt/$1" $2
+docker exec model_converter python3 ./opt/convert_to_onnx.py "/opt/$1" $NUM
 
 # Copy .onnx file back to host to checkfor success
 docker cp model_converetr:/opt/${BASENAME}.onnx "${BASENAME}.onnx"

@@ -6,11 +6,9 @@
 # 	convert PyTorch .pth models to ONNXRuntime's .ort
 #	format.
 #
-#	USAGE: . convert_model [pytorch_model_file] [N]
+#	USAGE: . convert_model [pytorch_model_file]
 #
-#	...where N = number of species identified by the model
-#
-#	Eg: . convert_model model257species.pyt 257
+#	Eg: . convert_model model257species.pyt
 #
 #	2pi Software
 #	Lachlan Walker
@@ -20,10 +18,9 @@
 # Strip file extension from model file name
 readarray -d . -t strarr <<< "$1"
 BASENAME = ${strarr[0]}
-$NUM = $2
 
 # Check that exactly 2 cmd line args have been passed
-if [[ $# != 2 ]]; then
+if [[ $# != 1 ]]; then
     echo "Incorrect number of arguments supplied. Please check usage instructions."
     exit 1
 fi
@@ -38,12 +35,11 @@ fi
 
 echo "Base model name: " $BASENAME
 
-### ASSUMES WELL-NAMED MODEL FILE, EXPLICIT OUTPUT SIZE DECLARATION PREFERRED
-# Get the number of outputs from the model (N )
-# FULL_LINE=$(grep -oa "num_classes=[0-9]*" "$FILE")
-# echo Full line is : $FULL_LINE
-# NUM=$(echo "$FULL_LINE" | grep -Po "[0-9][0-9][0-9]")
-# echo "number is " $NUM
+# Get the number of outputs from the model (N)
+FULL_LINE=$(grep -oa "num_classes=[0-9]*" "$FILE")
+echo Class spec full line: $FULL_LINE
+NUM=$(echo "$FULL_LINE" | grep -Po "[0-9][0-9][0-9]")
+echo "Detected N classes = " $NUM
 
 echo "Converting model to .onnx..."
 
