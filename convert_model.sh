@@ -64,7 +64,7 @@ echo "Converting model to .onnx..."
 docker exec model_converter python3 ./opt/convert_to_onnx.py "/opt/$1" $NUM
 
 # Copy .onnx file back to host to checkfor success
-docker cp model_converetr:/opt/${BASENAME}.onnx "${BASENAME}.onnx"
+docker cp model_converter:/opt/${BASENAME}.onnx "${BASENAME}.onnx"
 
 # Catch .pyt -> .onnx failure. 
 if [[ ! -f "${BASENAME}.onnx" ]]; then
